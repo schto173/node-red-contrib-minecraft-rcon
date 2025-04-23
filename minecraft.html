@@ -1,17 +1,43 @@
 <!-- minecraft.html -->
-<!-- Keep original config template -->
 <script type="text/html" data-template-name="minecraft-server-config">
-    <!-- Original config node HTML -->
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="fa fa-globe"></i> Host</label>
+        <input type="text" id="node-config-input-host" placeholder="localhost">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-rconPort"><i class="fa fa-random"></i> RCON Port</label>
+        <input type="text" id="node-config-input-rconPort" placeholder="25575">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-rconPassword"><i class="fa fa-lock"></i> RCON Password</label>
+        <input type="password" id="node-config-input-rconPassword">
+    </div>
 </script>
 
-<!-- Keep original RCON template -->
 <script type="text/html" data-template-name="minecraft-rcon">
-    <!-- Original RCON node HTML -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-command"><i class="fa fa-terminal"></i> Default Command</label>
+        <input type="text" id="node-input-command" placeholder="list">
+    </div>
 </script>
 
-<!-- Keep original Status template -->
 <script type="text/html" data-template-name="minecraft-status">
-    <!-- Original Status node HTML -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
 </script>
 
 <!-- Player Info Node -->
@@ -298,4 +324,221 @@
         },
         paletteLabel: "server"
     });
+</script>
+
+<!-- RCON Command Node Help -->
+<script type="text/html" data-help-name="minecraft-rcon">
+    <p>Sends RCON commands to a Minecraft server.</p>
+    
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>The Minecraft command to execute (e.g., "time set day")</dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>The response from the server</dd>
+    </dl>
+
+    <h3>Details</h3>
+    <p>This node allows you to send any valid Minecraft command to the server. Examples:</p>
+    <ul>
+        <li><code>time set day</code> - Sets time to day</li>
+        <li><code>weather clear</code> - Sets weather to clear</li>
+        <li><code>list</code> - Lists online players</li>
+    </ul>
+</script>
+
+<!-- Status Node Help -->
+<script type="text/html" data-help-name="minecraft-status">
+    <p>Gets the current status of the Minecraft server.</p>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>
+            <ul>
+                <li><b>online</b>: Number of players online</li>
+                <li><b>max</b>: Maximum player capacity</li>
+                <li><b>version</b>: Server version</li>
+                <li><b>players</b>: Array of online players</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Example Flow</h3>
+    <pre>
+[{"id":"status1","type":"minecraft-status"},{"id":"debug1","type":"debug"}]
+    </pre>
+</script>
+
+<!-- Player Info Node Help -->
+<script type="text/html" data-help-name="minecraft-player-info">
+    <p>Retrieves specific information about a player.</p>
+
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Info Type <span class="property-type">select</span></dt>
+        <dd>Type of information to retrieve:
+            <ul>
+                <li><b>health</b>: Player's health points</li>
+                <li><b>position</b>: Player's coordinates</li>
+                <li><b>inventory</b>: Inventory contents</li>
+                <li><b>experience</b>: XP level</li>
+                <li><b>gamemode</b>: Current game mode</li>
+                <li><b>food</b>: Food level</li>
+                <li><b>effects</b>: Active potion effects</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>player <span class="property-type">string</span></dt>
+        <dd>Player name or selector (e.g., "Steve" or "@p")</dd>
+        <dt>infoType <span class="property-type">string</span></dt>
+        <dd>Override the configured info type</dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>
+            <ul>
+                <li><b>raw</b>: Raw server response</li>
+                <li><b>value</b>: Parsed value</li>
+                <li><b>player</b>: Player queried</li>
+                <li><b>type</b>: Info type queried</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+
+<!-- Block Node Help -->
+<script type="text/html" data-help-name="minecraft-block">
+    <p>Manages blocks in the Minecraft world.</p>
+
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Action <span class="property-type">select</span></dt>
+        <dd>
+            <ul>
+                <li><b>set</b>: Place a single block</li>
+                <li><b>fill</b>: Fill an area with blocks</li>
+                <li><b>clone</b>: Copy blocks from one area to another</li>
+                <li><b>info</b>: Get block information</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>action <span class="property-type">string</span></dt>
+        <dd>Override the configured action</dd>
+        <dt>coordinates <span class="property-type">string</span></dt>
+        <dd>Block coordinates (e.g., "0 64 0")</dd>
+        <dt>block <span class="property-type">string</span></dt>
+        <dd>Block type (e.g., "stone")</dd>
+        <dt>endCoordinates <span class="property-type">string</span></dt>
+        <dd>End coordinates for fill/clone</dd>
+    </dl>
+
+    <h3>Examples</h3>
+    <pre>
+// Set a block
+msg.action = "set";
+msg.coordinates = "0 64 0";
+msg.block = "stone";
+
+// Fill area
+msg.action = "fill";
+msg.coordinates = "0 64 0";
+msg.endCoordinates = "10 64 10";
+msg.block = "grass_block";
+    </pre>
+</script>
+
+<!-- Entity Node Help -->
+<script type="text/html" data-help-name="minecraft-entity">
+    <p>Manages entities in the Minecraft world.</p>
+
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Action <span class="property-type">select</span></dt>
+        <dd>
+            <ul>
+                <li><b>spawn</b>: Create new entity</li>
+                <li><b>kill</b>: Remove entities</li>
+                <li><b>count</b>: Count entities</li>
+                <li><b>info</b>: Get entity data</li>
+                <li><b>modify</b>: Modify entity properties</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>action <span class="property-type">string</span></dt>
+        <dd>Override the configured action</dd>
+        <dt>entity <span class="property-type">string</span></dt>
+        <dd>Entity type (e.g., "zombie")</dd>
+        <dt>coordinates <span class="property-type">string</span></dt>
+        <dd>Spawn coordinates</dd>
+        <dt>nbt <span class="property-type">string</span></dt>
+        <dd>Entity NBT data</dd>
+    </dl>
+
+    <h3>Examples</h3>
+    <pre>
+// Spawn a charged creeper
+msg.action = "spawn";
+msg.entity = "creeper";
+msg.coordinates = "~ ~2 ~";
+msg.nbt = "{powered:1}";
+
+// Kill all zombies
+msg.action = "kill";
+msg.selector = "@e[type=zombie]";
+    </pre>
+</script>
+
+<!-- World Management Node Help -->
+<script type="text/html" data-help-name="minecraft-world">
+    <p>Controls world settings and environment.</p>
+
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Action <span class="property-type">select</span></dt>
+        <dd>
+            <ul>
+                <li><b>time</b>: Set world time</li>
+                <li><b>weather</b>: Change weather</li>
+                <li><b>difficulty</b>: Set game difficulty</li>
+                <li><b>gamerule</b>: Modify game rules</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>action <span class="property-type">string</span></dt>
+        <dd>Override the configured action</dd>
+        <dt>time <span class="property-type">string</span></dt>
+        <dd>Time setting (day, night, etc.)</dd>
+        <dt>weather <span class="property-type">string</span></dt>
+        <dd>Weather type (clear, rain, thunder)</dd>
+    </dl>
+
+    <h3>Examples</h3>
+    <pre>
+// Set time to day
+msg.action = "time";
+msg.time = "day";
+
+// Make it rain
+msg.action = "weather";
+msg.weather = "rain";
+    </pre>
 </script>
