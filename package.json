@@ -6,6 +6,7 @@
         "minecraft-server-util": "^5.4.4",
         "rcon-client": "^4.2.3"
     },
+    "keywords": [],
     "node-red": {
         "nodes": {
             "minecraft-rcon": "minecraft-rcon.js"
