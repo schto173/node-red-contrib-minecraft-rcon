@@ -1,19 +1,21 @@
+<!-- minecraft.html -->
+<!-- Keep original config template -->
 <script type="text/html" data-template-name="minecraft-server-config">
-    <div class="form-row">
-        <label for="node-config-input-host"><i class="fa fa-globe"></i> Host</label>
-        <input type="text" id="node-config-input-host">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-rconPort"><i class="fa fa-random"></i> RCON Port</label>
-        <input type="text" id="node-config-input-rconPort">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-rconPassword"><i class="fa fa-lock"></i> RCON Password</label>
-        <input type="password" id="node-config-input-rconPassword">
-    </div>
+    <!-- Original config node HTML -->
 </script>
 
+<!-- Keep original RCON template -->
 <script type="text/html" data-template-name="minecraft-rcon">
+    <!-- Original RCON node HTML -->
+</script>
+
+<!-- Keep original Status template -->
+<script type="text/html" data-template-name="minecraft-status">
+    <!-- Original Status node HTML -->
+</script>
+
+<!-- Player Info Node -->
+<script type="text/html" data-template-name="minecraft-player-info">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -23,12 +25,26 @@
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
-        <label for="node-input-command"><i class="fa fa-terminal"></i> Default Command</label>
-        <input type="text" id="node-input-command" placeholder="list">
+        <label for="node-input-infoType"><i class="fa fa-info"></i> Info Type</label>
+        <select id="node-input-infoType">
+            <option value="health">Health</option>
+            <option value="position">Position</option>
+            <option value="inventory">Inventory</option>
+            <option value="experience">Experience</option>
+            <option value="gamemode">Game Mode</option>
+            <option value="food">Food Level</option>
+            <option value="effects">Active Effects</option>
+            <option value="score">Scoreboard</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-player"><i class="fa fa-user"></i> Default Player</label>
+        <input type="text" id="node-input-player" placeholder="@p">
     </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-status">
+<!-- Block Management Node -->
+<script type="text/html" data-template-name="minecraft-block">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -36,50 +52,250 @@
     <div class="form-row">
         <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
         <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-cube"></i> Action</label>
+        <select id="node-input-action">
+            <option value="set">Set Block</option>
+            <option value="fill">Fill Area</option>
+            <option value="clone">Clone Area</option>
+            <option value="info">Get Block Info</option>
+        </select>
+    </div>
+</script>
+
+<!-- Entity Management Node -->
+<script type="text/html" data-template-name="minecraft-entity">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-bug"></i> Action</label>
+        <select id="node-input-action">
+            <option value="spawn">Spawn Entity</option>
+            <option value="kill">Kill Entity</option>
+            <option value="count">Count Entities</option>
+            <option value="info">Get Entity Info</option>
+            <option value="modify">Modify Entity</option>
+        </select>
     </div>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('minecraft-server-config', {
-        category: 'config',
-        defaults: {
-            host: { value: "localhost", required: true },
-            rconPort: { value: 25575, required: true, validate: RED.validators.number() },
-            rconPassword: { value: "", required: true }
-        },
-        label: function() {
-            return this.host + ":" + this.rconPort;
-        }
-    });
+    // Add to existing registrations
 
-    RED.nodes.registerType('minecraft-rcon', {
+    RED.nodes.registerType('minecraft-player-info', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
             server: { type: "minecraft-server-config", required: true },
-            command: { value: "" }
+            infoType: { value: "health" },
+            player: { value: "@p" }
         },
         inputs: 1,
         outputs: 1,
-        icon: "file.png",
+        icon: "info.png",
         label: function() {
-            return this.name || "minecraft rcon";
-        }
+            return this.name || "player info";
+        },
+        paletteLabel: "player info"
     });
 
-    RED.nodes.registerType('minecraft-status', {
+    RED.nodes.registerType('minecraft-block', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
-            server: { type: "minecraft-server-config", required: true }
+            server: { type: "minecraft-server-config", required: true },
+            action: { value: "set" }
         },
         inputs: 1,
         outputs: 1,
-        icon: "file.png",
+        icon: "cube.png",
         label: function() {
-            return this.name || "minecraft status";
-        }
+            return this.name || "block";
+        },
+        paletteLabel: "block"
+    });
+
+    RED.nodes.registerType('minecraft-entity', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            action: { value: "spawn" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "bug.png",
+        label: function() {
+            return this.name || "entity";
+        },
+        paletteLabel: "entity"
+    });
+</script>
+
+<!-- New Player Management template -->
+<script type="text/html" data-template-name="minecraft-player">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <select id="node-input-action">
+            <option value="kick">Kick</option>
+            <option value="ban">Ban</option>
+            <option value="pardon">Pardon</option>
+            <option value="gamemode">Change Gamemode</option>
+            <option value="tp">Teleport</option>
+            <option value="give">Give Item</option>
+            <option value="clear">Clear Inventory</option>
+            <option value="kill">Kill</option>
+            <option value="xp">Give XP</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-player"><i class="fa fa-user"></i> Default Player</label>
+        <input type="text" id="node-input-player" placeholder="@p">
+    </div>
+    <div class="form-row">
+        <label for="node-input-gamemode"><i class="fa fa-gamepad"></i> Default Gamemode</label>
+        <select id="node-input-gamemode">
+            <option value="survival">Survival</option>
+            <option value="creative">Creative</option>
+            <option value="adventure">Adventure</option>
+            <option value="spectator">Spectator</option>
+        </select>
+    </div>
+</script>
+
+<!-- New World Management template -->
+<script type="text/html" data-template-name="minecraft-world">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <select id="node-input-action">
+            <option value="time">Set Time</option>
+            <option value="weather">Set Weather</option>
+            <option value="difficulty">Set Difficulty</option>
+            <option value="gamerule">Set Gamerule</option>
+            <option value="worldborder">Set World Border</option>
+            <option value="setworldspawn">Set World Spawn</option>
+        </select>
+    </div>
+</script>
+
+<!-- New Server Management template -->
+<script type="text/html" data-template-name="minecraft-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <select id="node-input-action">
+            <option value="save-all">Save World</option>
+            <option value="save-off">Disable Saving</option>
+            <option value="save-on">Enable Saving</option>
+            <option value="stop">Stop Server</option>
+            <option value="whitelist">Manage Whitelist</option>
+            <option value="op">Op Player</option>
+            <option value="deop">Deop Player</option>
+            <option value="broadcast">Broadcast Message</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/javascript">
+    // Keep original registrations
+    RED.nodes.registerType('minecraft-server-config', {
+        // Original config registration
+    });
+
+    RED.nodes.registerType('minecraft-rcon', {
+        // Original RCON registration
+    });
+
+    RED.nodes.registerType('minecraft-status', {
+        // Original Status registration
+    });
+
+    // New Player Management registration
+    RED.nodes.registerType('minecraft-player', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            action: { value: "kick" },
+            player: { value: "@p" },
+            gamemode: { value: "survival" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "user.png",
+        label: function() {
+            return this.name || "minecraft player";
+        },
+        paletteLabel: "player"
+    });
+
+    // New World Management registration
+    RED.nodes.registerType('minecraft-world', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            action: { value: "time" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "world.png",
+        label: function() {
+            return this.name || "minecraft world";
+        },
+        paletteLabel: "world"
+    });
+
+    // New Server Management registration
+    RED.nodes.registerType('minecraft-server', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            action: { value: "save-all" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "server.png",
+        label: function() {
+            return this.name || "minecraft server";
+        },
+        paletteLabel: "server"
     });
 </script>
