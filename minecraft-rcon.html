@@ -1,0 +1,85 @@
+<script type="text/html" data-template-name="minecraft-server-config">
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="fa fa-globe"></i> Host</label>
+        <input type="text" id="node-config-input-host">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-rconPort"><i class="fa fa-random"></i> RCON Port</label>
+        <input type="text" id="node-config-input-rconPort">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-rconPassword"><i class="fa fa-lock"></i> RCON Password</label>
+        <input type="password" id="node-config-input-rconPassword">
+    </div>
+</script>
+
+<script type="text/html" data-template-name="minecraft-rcon">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-command"><i class="fa fa-terminal"></i> Default Command</label>
+        <input type="text" id="node-input-command" placeholder="list">
+    </div>
+</script>
+
+<script type="text/html" data-template-name="minecraft-status">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('minecraft-server-config', {
+        category: 'config',
+        defaults: {
+            host: { value: "localhost", required: true },
+            rconPort: { value: 25575, required: true, validate: RED.validators.number() },
+            rconPassword: { value: "", required: true }
+        },
+        label: function() {
+            return this.host + ":" + this.rconPort;
+        }
+    });
+
+    RED.nodes.registerType('minecraft-rcon', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            command: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        label: function() {
+            return this.name || "minecraft rcon";
+        }
+    });
+
+    RED.nodes.registerType('minecraft-status', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        label: function() {
+            return this.name || "minecraft status";
+        }
+    });
+</script>

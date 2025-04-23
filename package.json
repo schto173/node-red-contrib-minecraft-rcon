@@ -1,0 +1,14 @@
+{
+    "name": "node-red-contrib-minecraft-rcon",
+    "version": "1.0.0",
+    "description": "Node-RED nodes for Minecraft server RCON commands and status",
+    "dependencies": {
+        "minecraft-server-util": "^5.4.4",
+        "rcon-client": "^4.2.3"
+    },
+    "node-red": {
+        "nodes": {
+            "minecraft-rcon": "minecraft-rcon.js"
+        }
+    }
+}
