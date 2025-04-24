@@ -10,6 +10,14 @@
     "node-red": {
         "nodes": {
             "minecraft": "minecraft.js"
-        }
-    }
+        },
+        "version": ">=2.0.0"
+    },
+    "license" : "MIT",
+    "url": "https://github.com/schto173/node-red-contrib-minecraft-rcon/issues",
+    "email": "schmitztom@outlook.com",
+    "engines": {
+        "node": ">=12.0.0"
+      }
+      
 }
