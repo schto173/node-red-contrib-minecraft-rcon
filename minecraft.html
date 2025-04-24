@@ -256,17 +256,47 @@
 </script>
 
 <script type="text/javascript">
-    // Keep original registrations
-    RED.nodes.registerType('minecraft-server-config', {
-        // Original config registration
+   RED.nodes.registerType('minecraft-server-config', {
+        category: 'config',
+        defaults: {
+            host: { value: "localhost", required: true },
+            rconPort: { value: 25575, required: true, validate: RED.validators.number() },
+            rconPassword: { value: "", required: true }
+        },
+        label: function() {
+            return this.host + ":" + this.rconPort;
+        }
     });
 
     RED.nodes.registerType('minecraft-rcon', {
-        // Original RCON registration
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            command: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        label: function() {
+            return this.name || "minecraft rcon";
+        }
     });
 
     RED.nodes.registerType('minecraft-status', {
-        // Original Status registration
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        label: function() {
+            return this.name || "minecraft status";
+        }
     });
 
     // New Player Management registration
