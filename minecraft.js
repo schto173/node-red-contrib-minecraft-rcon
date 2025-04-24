@@ -2,16 +2,16 @@ module.exports = function(RED) {
     const util = require('minecraft-server-util');
     const { Rcon } = require('rcon-client');
 
-    // Config node - unchanged
-    function MinecraftServerConfigNode(config) {
+    // Config node
+    function ServerConfigNode(config) {
         RED.nodes.createNode(this, config);
         this.host = config.host;
         this.rconPort = config.rconPort;
         this.rconPassword = config.rconPassword;
     }
 
-    // Server Info Node (formerly Status)
-    function MinecraftServerInfoNode(config) {
+    // Server Info Node
+    function ServerInfoNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -40,7 +40,7 @@ module.exports = function(RED) {
     }
 
     // Server Management Node
-    function MinecraftServerManageNode(config) {
+    function ServerManageNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -105,7 +105,7 @@ module.exports = function(RED) {
     }
 
     // Player Info Node
-    function MinecraftPlayerInfoNode(config) {
+    function PlayerInfoNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -176,7 +176,7 @@ module.exports = function(RED) {
     }
 
     // Player Management Node
-    function MinecraftPlayerManageNode(config) {
+    function PlayerManageNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -246,7 +246,7 @@ module.exports = function(RED) {
     }
 
     // World Management Node
-    function MinecraftWorldNode(config) {
+    function WorldNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -308,7 +308,7 @@ module.exports = function(RED) {
     }
 
     // Block Management Node
-    function MinecraftBlockNode(config) {
+    function BlockNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -368,7 +368,7 @@ module.exports = function(RED) {
     }
 
     // Entity Management Node
-    function MinecraftEntityNode(config) {
+    function EntityNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -430,7 +430,7 @@ module.exports = function(RED) {
     }
 
     // RCON Command Node
-    function MinecraftRconNode(config) {
+    function RconNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -487,14 +487,14 @@ module.exports = function(RED) {
         return response;
     }
 
-    // Register all nodes with unified naming
-    RED.nodes.registerType("minecraft-server-config", MinecraftServerConfigNode);
-    RED.nodes.registerType("minecraft-server-info", MinecraftServerInfoNode);
-    RED.nodes.registerType("minecraft-server-manage", MinecraftServerManageNode);
-    RED.nodes.registerType("minecraft-player-info", MinecraftPlayerInfoNode);
-    RED.nodes.registerType("minecraft-player-manage", MinecraftPlayerManageNode);
-    RED.nodes.registerType("minecraft-world", MinecraftWorldNode);
-    RED.nodes.registerType("minecraft-block", MinecraftBlockNode);
-    RED.nodes.registerType("minecraft-entity", MinecraftEntityNode);
-    RED.nodes.registerType("minecraft-rcon", MinecraftRconNode);
+    // Register all nodes with simplified names
+    RED.nodes.registerType("serverconfig", ServerConfigNode);
+    RED.nodes.registerType("serverinfo", ServerInfoNode);
+    RED.nodes.registerType("servermanage", ServerManageNode);
+    RED.nodes.registerType("playerinfo", PlayerInfoNode);
+    RED.nodes.registerType("playermanage", PlayerManageNode);
+    RED.nodes.registerType("world", WorldNode);
+    RED.nodes.registerType("block", BlockNode);
+    RED.nodes.registerType("entity", EntityNode);
+    RED.nodes.registerType("rcon", RconNode);
 }

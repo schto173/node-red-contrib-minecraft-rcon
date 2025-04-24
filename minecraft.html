@@ -1,5 +1,5 @@
 <!-- minecraft.html -->
-<script type="text/html" data-template-name="minecraft-server-config">
+<script type="text/html" data-template-name="serverconfig">
     <div class="form-row">
         <label for="node-config-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-config-input-host" placeholder="localhost">
@@ -14,7 +14,7 @@
     </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-rcon">
+<script type="text/html" data-template-name="rcon">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -29,7 +29,7 @@
     </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-server-info">
+<script type="text/html" data-template-name="serverinfo">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -40,7 +40,7 @@
     </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-player-info">
+<script type="text/html" data-template-name="playerinfo">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -68,7 +68,7 @@
     </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-player-manage">
+<script type="text/html" data-template-name="playermanage">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -91,9 +91,18 @@
             <option value="xp">Give XP</option>
         </select>
     </div>
+    <div class="form-row">
+        <label for="node-input-gamemode"><i class="fa fa-gamepad"></i> Default Gamemode</label>
+        <select id="node-input-gamemode">
+            <option value="survival">Survival</option>
+            <option value="creative">Creative</option>
+            <option value="adventure">Adventure</option>
+            <option value="spectator">Spectator</option>
+        </select>
+    </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-world">
+<script type="text/html" data-template-name="world">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -115,7 +124,7 @@
     </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-block">
+<script type="text/html" data-template-name="block">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -135,7 +144,7 @@
     </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-entity">
+<script type="text/html" data-template-name="entity">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -156,7 +165,7 @@
     </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-server-manage">
+<script type="text/html" data-template-name="servermanage">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -182,7 +191,7 @@
 
 <!-- Help Documentation -->
 
-<script type="text/html" data-help-name="minecraft-rcon">
+<script type="text/html" data-help-name="rcon">
     <p>Sends raw RCON commands to a Minecraft server.</p>
     
     <h3>Inputs</h3>
@@ -198,7 +207,7 @@
     </dl>
 </script>
 
-<script type="text/html" data-help-name="minecraft-server-info">
+<script type="text/html" data-help-name="serverinfo">
     <p>Gets the current status of the Minecraft server.</p>
 
     <h3>Outputs</h3>
@@ -215,7 +224,7 @@
     </dl>
 </script>
 
-<script type="text/html" data-help-name="minecraft-player-info">
+<script type="text/html" data-help-name="playerinfo">
     <p>Retrieves information about a player.</p>
 
     <h3>Inputs</h3>
@@ -238,7 +247,7 @@
     </dl>
 </script>
 
-<script type="text/html" data-help-name="minecraft-player-manage">
+<script type="text/html" data-help-name="playermanage">
     <p>Manages player actions and properties.</p>
 
     <h3>Inputs</h3>
@@ -262,7 +271,7 @@
     </dl>
 </script>
 
-<script type="text/html" data-help-name="minecraft-world">
+<script type="text/html" data-help-name="world">
     <p>Controls world settings and environment.</p>
 
     <h3>Inputs</h3>
@@ -287,7 +296,7 @@
     </dl>
 </script>
 
-<script type="text/html" data-help-name="minecraft-block">
+<script type="text/html" data-help-name="block">
     <p>Manages blocks in the world.</p>
 
     <h3>Inputs</h3>
@@ -316,7 +325,7 @@
     </dl>
 </script>
 
-<script type="text/html" data-help-name="minecraft-entity">
+<script type="text/html" data-help-name="entity">
     <p>Manages entities in the world.</p>
 
     <h3>Inputs</h3>
@@ -346,7 +355,7 @@
     </dl>
 </script>
 
-<script type="text/html" data-help-name="minecraft-server-manage">
+<script type="text/html" data-help-name="servermanage">
     <p>Manages server operations.</p>
 
     <h3>Inputs</h3>
@@ -370,7 +379,7 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('minecraft-server-config', {
+    RED.nodes.registerType('serverconfig', {
         category: 'config',
         defaults: {
             host: { value: "localhost", required: true },
@@ -382,28 +391,28 @@
         }
     });
 
-    RED.nodes.registerType('minecraft-rcon', {
+    RED.nodes.registerType('rcon', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
+            server: { type: "serverconfig", required: true },
             command: { value: "" }
         },
         inputs: 1,
         outputs: 1,
         icon: "file.png",
         label: function() {
-            return this.name || "minecraft rcon";
+            return this.name || "rcon";
         }
     });
 
-    RED.nodes.registerType('minecraft-server-info', {
+    RED.nodes.registerType('serverinfo', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
-            server: { type: "minecraft-server-config", required: true }
+            server: { type: "serverconfig", required: true }
         },
         inputs: 1,
         outputs: 1,
@@ -413,12 +422,12 @@
         }
     });
 
-    RED.nodes.registerType('minecraft-server-manage', {
+    RED.nodes.registerType('servermanage', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
+            server: { type: "serverconfig", required: true },
             action: { value: "save-all" }
         },
         inputs: 1,
@@ -429,12 +438,12 @@
         }
     });
 
-    RED.nodes.registerType('minecraft-player-info', {
+    RED.nodes.registerType('playerinfo', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
+            server: { type: "serverconfig", required: true },
             infoType: { value: "health" },
             player: { value: "@p" }
         },
@@ -446,13 +455,14 @@
         }
     });
 
-    RED.nodes.registerType('minecraft-player-manage', {
+    RED.nodes.registerType('playermanage', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
-            action: { value: "kick" }
+            server: { type: "serverconfig", required: true },
+            action: { value: "kick" },
+            gamemode: { value: "survival" }
         },
         inputs: 1,
         outputs: 1,
@@ -462,12 +472,12 @@
         }
     });
 
-    RED.nodes.registerType('minecraft-world', {
+    RED.nodes.registerType('world', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
+            server: { type: "serverconfig", required: true },
             action: { value: "time" }
         },
         inputs: 1,
@@ -478,12 +488,12 @@
         }
     });
 
-    RED.nodes.registerType('minecraft-block', {
+    RED.nodes.registerType('block', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
+            server: { type: "serverconfig", required: true },
             action: { value: "set" }
         },
         inputs: 1,
@@ -494,12 +504,12 @@
         }
     });
 
-    RED.nodes.registerType('minecraft-entity', {
+    RED.nodes.registerType('entity', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
             name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
+            server: { type: "serverconfig", required: true },
             action: { value: "spawn" }
         },
         inputs: 1,
