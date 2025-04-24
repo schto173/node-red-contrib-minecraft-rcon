@@ -1,9 +1,8 @@
-// minecraft.js
 module.exports = function(RED) {
     const util = require('minecraft-server-util');
     const { Rcon } = require('rcon-client');
 
-    // Keep original config node
+    // Config node - unchanged
     function MinecraftServerConfigNode(config) {
         RED.nodes.createNode(this, config);
         this.host = config.host;
@@ -11,42 +10,8 @@ module.exports = function(RED) {
         this.rconPassword = config.rconPassword;
     }
 
-    // Keep original RCON node
-    function MinecraftRconNode(config) {
-        RED.nodes.createNode(this, config);
-        const node = this;
-        this.server = RED.nodes.getNode(config.server);
-
-        node.on('input', async function(msg) {
-            if (!this.server) {
-                node.error("Server configuration missing");
-                return;
-            }
-
-            const command = msg.payload || config.command;
-            
-            const rcon = new Rcon({
-                host: this.server.host,
-                port: this.server.rconPort,
-                password: this.server.rconPassword
-            });
-
-            try {
-                await rcon.connect();
-                const response = await rcon.send(command);
-                await rcon.end();
-                msg.payload = response;
-                node.send(msg);
-                node.status({fill:"green", shape:"dot", text:"success"});
-            } catch (err) {
-                node.error('RCON Error:', err);
-                node.status({fill:"red", shape:"ring", text:"error"});
-            }
-        });
-    }
-
-    // Keep original Status node
-    function MinecraftStatusNode(config) {
+    // Server Info Node (formerly Status)
+    function MinecraftServerInfoNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -74,10 +39,144 @@ module.exports = function(RED) {
         });
     }
 
-    // New specialized nodes:
+    // Server Management Node
+    function MinecraftServerManageNode(config) {
+        RED.nodes.createNode(this, config);
+        const node = this;
+        this.server = RED.nodes.getNode(config.server);
+        this.action = config.action;
+
+        node.on('input', async function(msg) {
+            if (!this.server) {
+                node.error("Server configuration missing");
+                return;
+            }
+
+            const action = msg.action || this.action;
+            let command = "";
+
+            switch(action) {
+                case "save-all":
+                    command = "save-all";
+                    break;
+                case "save-off":
+                    command = "save-off";
+                    break;
+                case "save-on":
+                    command = "save-on";
+                    break;
+                case "stop":
+                    command = "stop";
+                    break;
+                case "whitelist":
+                    command = `whitelist ${msg.payload || "list"}`;
+                    break;
+                case "op":
+                    command = `op ${msg.payload}`;
+                    break;
+                case "deop":
+                    command = `deop ${msg.payload}`;
+                    break;
+                case "broadcast":
+                    command = `say ${msg.payload}`;
+                    break;
+            }
+
+            if(command) {
+                const rcon = new Rcon({
+                    host: this.server.host,
+                    port: this.server.rconPort,
+                    password: this.server.rconPassword
+                });
+
+                try {
+                    await rcon.connect();
+                    const response = await rcon.send(command);
+                    await rcon.end();
+                    msg.payload = response;
+                    node.send(msg);
+                    node.status({fill:"green", shape:"dot", text:"success"});
+                } catch (err) {
+                    node.error('RCON Error:', err);
+                    node.status({fill:"red", shape:"ring", text:"error"});
+                }
+            }
+        });
+    }
+
+    // Player Info Node
+    function MinecraftPlayerInfoNode(config) {
+        RED.nodes.createNode(this, config);
+        const node = this;
+        this.server = RED.nodes.getNode(config.server);
+        this.infoType = config.infoType;
+
+        node.on('input', async function(msg) {
+            if (!this.server) {
+                node.error("Server configuration missing");
+                return;
+            }
+
+            const player = msg.payload || config.player || "@p";
+            const infoType = msg.infoType || this.infoType;
+            let command = "";
+
+            switch(infoType) {
+                case "health":
+                    command = `data get entity ${player} Health`;
+                    break;
+                case "position":
+                    command = `data get entity ${player} Pos`;
+                    break;
+                case "inventory":
+                    command = `data get entity ${player} Inventory`;
+                    break;
+                case "experience":
+                    command = `data get entity ${player} XpLevel`;
+                    break;
+                case "gamemode":
+                    command = `data get entity ${player} playerGameType`;
+                    break;
+                case "food":
+                    command = `data get entity ${player} foodLevel`;
+                    break;
+                case "effects":
+                    command = `data get entity ${player} ActiveEffects`;
+                    break;
+                case "score":
+                    command = `scoreboard players get ${player} ${msg.objective || "dummy"}`;
+                    break;
+            }
+
+            if(command) {
+                const rcon = new Rcon({
+                    host: this.server.host,
+                    port: this.server.rconPort,
+                    password: this.server.rconPassword
+                });
+
+                try {
+                    await rcon.connect();
+                    const response = await rcon.send(command);
+                    await rcon.end();
+                    msg.payload = {
+                        raw: response,
+                        player: player,
+                        type: infoType,
+                        value: parseMinecraftResponse(response)
+                    };
+                    node.send(msg);
+                    node.status({fill:"green", shape:"dot", text:"success"});
+                } catch (err) {
+                    node.error('RCON Error:', err);
+                    node.status({fill:"red", shape:"ring", text:"error"});
+                }
+            }
+        });
+    }
 
     // Player Management Node
-    function MinecraftPlayerNode(config) {
+    function MinecraftPlayerManageNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         this.server = RED.nodes.getNode(config.server);
@@ -90,42 +189,37 @@ module.exports = function(RED) {
                 return;
             }
 
-            const player = msg.player || config.player || "@p";
             const action = msg.action || this.action;
             let command = "";
 
             switch(action) {
                 case "kick":
-                    command = `kick ${player} ${msg.reason || "Kicked by server"}`;
+                    command = `kick ${msg.payload} ${msg.reason || "Kicked by server"}`;
                     break;
                 case "ban":
-                    command = `ban ${player} ${msg.reason || "Banned by server"}`;
+                    command = `ban ${msg.payload} ${msg.reason || "Banned by server"}`;
                     break;
                 case "pardon":
-                    command = `pardon ${player}`;
+                    command = `pardon ${msg.payload}`;
                     break;
                 case "gamemode":
-                    const mode = msg.gamemode || this.gamemode || "survival";
-                    command = `gamemode ${mode} ${player}`;
+                    command = `gamemode ${msg.payload || this.gamemode} ${msg.target || "@p"}`;
                     break;
                 case "tp":
-                    const coords = msg.coordinates || "0 64 0";
-                    command = `tp ${player} ${coords}`;
+                    command = `tp ${msg.target || "@p"} ${msg.payload}`;
                     break;
                 case "give":
-                    const item = msg.item || "diamond";
-                    const amount = msg.amount || 1;
-                    command = `give ${player} ${item} ${amount}`;
+                    const [item, amount] = (msg.payload || "diamond 1").split(' ');
+                    command = `give ${msg.target || "@p"} ${item} ${amount}`;
                     break;
                 case "clear":
-                    command = `clear ${player}`;
+                    command = `clear ${msg.payload || "@p"}`;
                     break;
                 case "kill":
-                    command = `kill ${player}`;
+                    command = `kill ${msg.payload || "@p"}`;
                     break;
                 case "xp":
-                    const xp = msg.xp || "1L";
-                    command = `xp give ${player} ${xp}`;
+                    command = `xp give ${msg.target || "@p"} ${msg.payload || "1L"}`;
                     break;
             }
 
@@ -169,31 +263,25 @@ module.exports = function(RED) {
 
             switch(action) {
                 case "time":
-                    const time = msg.time || "day";
-                    command = `time set ${time}`;
+                    command = `time set ${msg.payload || "day"}`;
                     break;
                 case "weather":
-                    const weather = msg.weather || "clear";
-                    command = `weather ${weather}`;
+                    command = `weather ${msg.payload || "clear"}`;
                     break;
                 case "difficulty":
-                    const difficulty = msg.difficulty || "normal";
-                    command = `difficulty ${difficulty}`;
+                    command = `difficulty ${msg.payload || "normal"}`;
                     break;
                 case "gamerule":
-                    const rule = msg.rule;
-                    const value = msg.value;
-                    if(rule && value !== undefined) {
+                    if (msg.payload) {
+                        const [rule, value] = msg.payload.split(' ');
                         command = `gamerule ${rule} ${value}`;
                     }
                     break;
                 case "worldborder":
-                    const size = msg.size || 1000;
-                    command = `worldborder set ${size}`;
+                    command = `worldborder set ${msg.payload || "1000"}`;
                     break;
                 case "setworldspawn":
-                    const coords = msg.coordinates || "~ ~ ~";
-                    command = `setworldspawn ${coords}`;
+                    command = `setworldspawn ${msg.payload || "~ ~ ~"}`;
                     break;
             }
 
@@ -209,151 +297,6 @@ module.exports = function(RED) {
                     const response = await rcon.send(command);
                     await rcon.end();
                     msg.payload = response;
-                    node.send(msg);
-                    node.status({fill:"green", shape:"dot", text:"success"});
-                } catch (err) {
-                    node.error('RCON Error:', err);
-                    node.status({fill:"red", shape:"ring", text:"error"});
-                }
-            }
-        });
-    }
-
-    // Server Management Node
-    function MinecraftServerNode(config) {
-        RED.nodes.createNode(this, config);
-        const node = this;
-        this.server = RED.nodes.getNode(config.server);
-        this.action = config.action;
-
-        node.on('input', async function(msg) {
-            if (!this.server) {
-                node.error("Server configuration missing");
-                return;
-            }
-
-            const action = msg.action || this.action;
-            let command = "";
-
-            switch(action) {
-                case "save-all":
-                    command = "save-all";
-                    break;
-                case "save-off":
-                    command = "save-off";
-                    break;
-                case "save-on":
-                    command = "save-on";
-                    break;
-                case "stop":
-                    command = "stop";
-                    break;
-                case "whitelist":
-                    const subaction = msg.subaction || "list";
-                    const player = msg.player || "";
-                    command = `whitelist ${subaction} ${player}`;
-                    break;
-                case "op":
-                    const target = msg.player;
-                    if(target) command = `op ${target}`;
-                    break;
-                case "deop":
-                    const targetDeop = msg.player;
-                    if(targetDeop) command = `deop ${targetDeop}`;
-                    break;
-                case "broadcast":
-                    const message = msg.message || msg.payload;
-                    if(message) command = `say ${message}`;
-                    break;
-            }
-
-            if(command) {
-                const rcon = new Rcon({
-                    host: this.server.host,
-                    port: this.server.rconPort,
-                    password: this.server.rconPassword
-                });
-
-                try {
-                    await rcon.connect();
-                    const response = await rcon.send(command);
-                    await rcon.end();
-                    msg.payload = response;
-                    node.send(msg);
-                    node.status({fill:"green", shape:"dot", text:"success"});
-                } catch (err) {
-                    node.error('RCON Error:', err);
-                    node.status({fill:"red", shape:"ring", text:"error"});
-                }
-            }
-        });
-    }
-
-    // Player Info Node
-    function MinecraftPlayerInfoNode(config) {
-        RED.nodes.createNode(this, config);
-        const node = this;
-        this.server = RED.nodes.getNode(config.server);
-        this.infoType = config.infoType;
-
-        node.on('input', async function(msg) {
-            if (!this.server) {
-                node.error("Server configuration missing");
-                return;
-            }
-
-            const player = msg.player || config.player || "@p";
-            const infoType = msg.infoType || this.infoType;
-            let command = "";
-
-            switch(infoType) {
-                case "health":
-                    command = `data get entity ${player} Health`;
-                    break;
-                case "position":
-                    command = `data get entity ${player} Pos`;
-                    break;
-                case "inventory":
-                    command = `data get entity ${player} Inventory`;
-                    break;
-                case "experience":
-                    command = `data get entity ${player} XpLevel`;
-                    break;
-                case "gamemode":
-                    command = `data get entity ${player} playerGameType`;
-                    break;
-                case "food":
-                    command = `data get entity ${player} foodLevel`;
-                    break;
-                case "effects":
-                    command = `data get entity ${player} ActiveEffects`;
-                    break;
-                case "score":
-                    const objective = msg.objective || "dummy";
-                    command = `scoreboard players get ${player} ${objective}`;
-                    break;
-            }
-
-            if(command) {
-                const rcon = new Rcon({
-                    host: this.server.host,
-                    port: this.server.rconPort,
-                    password: this.server.rconPassword
-                });
-
-                try {
-                    await rcon.connect();
-                    const response = await rcon.send(command);
-                    await rcon.end();
-                    
-                    // Parse the response into a more usable format
-                    msg.payload = {
-                        raw: response,
-                        player: player,
-                        type: infoType,
-                        value: parseMinecraftResponse(response)
-                    };
-                    
                     node.send(msg);
                     node.status({fill:"green", shape:"dot", text:"success"});
                 } catch (err) {
@@ -378,24 +321,23 @@ module.exports = function(RED) {
             }
 
             const action = msg.action || this.action;
-            const coordinates = msg.coordinates || "~ ~ ~";
-            const block = msg.block || "stone";
             let command = "";
 
             switch(action) {
                 case "set":
-                    command = `setblock ${coordinates} ${block}`;
+                    const [coords, block] = (msg.payload || "~ ~ ~ stone").split('|');
+                    command = `setblock ${coords} ${block}`;
                     break;
                 case "fill":
-                    const endCoordinates = msg.endCoordinates || coordinates;
-                    command = `fill ${coordinates} ${endCoordinates} ${block}`;
+                    const [start, end, fillBlock] = (msg.payload || "~ ~ ~ ~ ~ ~ stone").split('|');
+                    command = `fill ${start} ${end} ${fillBlock}`;
                     break;
                 case "clone":
-                    const destination = msg.destination || coordinates;
-                    command = `clone ${coordinates} ${msg.endCoordinates} ${destination}`;
+                    const [source, destination] = (msg.payload || "~ ~ ~ ~ ~ ~ ~ ~ ~").split('|');
+                    command = `clone ${source} ${destination}`;
                     break;
                 case "info":
-                    command = `data get block ${coordinates}`;
+                    command = `data get block ${msg.payload || "~ ~ ~"}`;
                     break;
             }
 
@@ -413,7 +355,6 @@ module.exports = function(RED) {
                     msg.payload = {
                         raw: response,
                         action: action,
-                        coordinates: coordinates,
                         result: parseMinecraftResponse(response)
                     };
                     node.send(msg);
@@ -440,30 +381,25 @@ module.exports = function(RED) {
             }
 
             const action = msg.action || this.action;
-            const coordinates = msg.coordinates || "~ ~ ~";
-            const entity = msg.entity || "zombie";
             let command = "";
 
             switch(action) {
                 case "spawn":
-                    const nbt = msg.nbt || "{}";
-                    command = `summon ${entity} ${coordinates} ${nbt}`;
+                    const [entity, coords, nbt] = (msg.payload || "zombie ~ ~ ~ {}").split('|');
+                    command = `summon ${entity} ${coords} ${nbt}`;
                     break;
                 case "kill":
-                    const selector = msg.selector || `@e[type=${entity}]`;
-                    command = `kill ${selector}`;
+                    command = `kill ${msg.payload || "@e[type=zombie]"}`;
                     break;
                 case "count":
-                    command = `execute if entity @e[type=${entity}]`;
+                    command = `execute if entity ${msg.payload || "@e"}`;
                     break;
                 case "info":
-                    const target = msg.target || `@e[type=${entity},limit=1]`;
-                    command = `data get entity ${target}`;
+                    command = `data get entity ${msg.payload || "@p"}`;
                     break;
                 case "modify":
-                    const targetEntity = msg.target || `@e[type=${entity},limit=1]`;
-                    const data = msg.data || "{}";
-                    command = `data merge entity ${targetEntity} ${data}`;
+                    const [target, data] = (msg.payload || "@p {}").split('|');
+                    command = `data merge entity ${target} ${data}`;
                     break;
             }
 
@@ -481,7 +417,6 @@ module.exports = function(RED) {
                     msg.payload = {
                         raw: response,
                         action: action,
-                        entity: entity,
                         result: parseMinecraftResponse(response)
                     };
                     node.send(msg);
@@ -494,27 +429,57 @@ module.exports = function(RED) {
         });
     }
 
+    // RCON Command Node
+    function MinecraftRconNode(config) {
+        RED.nodes.createNode(this, config);
+        const node = this;
+        this.server = RED.nodes.getNode(config.server);
+
+        node.on('input', async function(msg) {
+            if (!this.server) {
+                node.error("Server configuration missing");
+                return;
+            }
+
+            const command = msg.payload || config.command;
+            
+            const rcon = new Rcon({
+                host: this.server.host,
+                port: this.server.rconPort,
+                password: this.server.rconPassword
+            });
+
+            try {
+                await rcon.connect();
+                const response = await rcon.send(command);
+                await rcon.end();
+                msg.payload = response;
+                node.send(msg);
+                node.status({fill:"green", shape:"dot", text:"success"});
+            } catch (err) {
+                node.error('RCON Error:', err);
+                node.status({fill:"red", shape:"ring", text:"error"});
+            }
+        });
+    }
+
     // Helper function to parse Minecraft command responses
     function parseMinecraftResponse(response) {
         if (!response) return null;
         
-        // Try to extract numbers from responses like "Steve has 20 health"
         const numberMatch = response.match(/(\d+(\.\d+)?)/);
         if (numberMatch) return Number(numberMatch[1]);
         
-        // Try to parse JSON-like responses
         if (response.includes('{') || response.includes('[')) {
             try {
-                // Clean up the response to make it valid JSON
                 const jsonStr = response
-                    .replace(/(\w+):/g, '"$1":')  // Add quotes to keys
-                    .replace(/(\d+)b/g, '$1')     // Remove byte suffix
-                    .replace(/(\d+)d/g, '$1')     // Remove double suffix
-                    .replace(/(\d+)f/g, '$1')     // Remove float suffix
-                    .replace(/(\d+)L/g, '$1');    // Remove long suffix
+                    .replace(/(\w+):/g, '"$1":')
+                    .replace(/(\d+)b/g, '$1')
+                    .replace(/(\d+)d/g, '$1')
+                    .replace(/(\d+)f/g, '$1')
+                    .replace(/(\d+)L/g, '$1');
                 return JSON.parse(jsonStr);
             } catch (e) {
-                // If parsing fails, return the raw string
                 return response;
             }
         }
@@ -522,20 +487,14 @@ module.exports = function(RED) {
         return response;
     }
 
-    // Register all nodes
+    // Register all nodes with unified naming
     RED.nodes.registerType("minecraft-server-config", MinecraftServerConfigNode);
-
-    RED.nodes.registerType("minecraft-server-info", MinecraftStatusNode);
-    RED.nodes.registerType("minecraft-server-manage", MinecraftServerNode);
-
+    RED.nodes.registerType("minecraft-server-info", MinecraftServerInfoNode);
+    RED.nodes.registerType("minecraft-server-manage", MinecraftServerManageNode);
     RED.nodes.registerType("minecraft-player-info", MinecraftPlayerInfoNode);
-    RED.nodes.registerType("minecraft-player-manage", MinecraftPlayerNode);
-
-    
+    RED.nodes.registerType("minecraft-player-manage", MinecraftPlayerManageNode);
     RED.nodes.registerType("minecraft-world", MinecraftWorldNode);
     RED.nodes.registerType("minecraft-block", MinecraftBlockNode);
     RED.nodes.registerType("minecraft-entity", MinecraftEntityNode);
-    
     RED.nodes.registerType("minecraft-rcon", MinecraftRconNode);
-
 }

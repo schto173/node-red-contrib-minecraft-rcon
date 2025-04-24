@@ -29,7 +29,7 @@
     </div>
 </script>
 
-<script type="text/html" data-template-name="minecraft-status">
+<script type="text/html" data-template-name="minecraft-server-info">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -40,7 +40,6 @@
     </div>
 </script>
 
-<!-- Player Info Node -->
 <script type="text/html" data-template-name="minecraft-player-info">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -69,107 +68,7 @@
     </div>
 </script>
 
-<!-- Block Management Node -->
-<script type="text/html" data-template-name="minecraft-block">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
-        <input type="text" id="node-input-server">
-    </div>
-    <div class="form-row">
-        <label for="node-input-action"><i class="fa fa-cube"></i> Action</label>
-        <select id="node-input-action">
-            <option value="set">Set Block</option>
-            <option value="fill">Fill Area</option>
-            <option value="clone">Clone Area</option>
-            <option value="info">Get Block Info</option>
-        </select>
-    </div>
-</script>
-
-<!-- Entity Management Node -->
-<script type="text/html" data-template-name="minecraft-entity">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
-        <input type="text" id="node-input-server">
-    </div>
-    <div class="form-row">
-        <label for="node-input-action"><i class="fa fa-bug"></i> Action</label>
-        <select id="node-input-action">
-            <option value="spawn">Spawn Entity</option>
-            <option value="kill">Kill Entity</option>
-            <option value="count">Count Entities</option>
-            <option value="info">Get Entity Info</option>
-            <option value="modify">Modify Entity</option>
-        </select>
-    </div>
-</script>
-
-<script type="text/javascript">
-    // Add to existing registrations
-
-    RED.nodes.registerType('minecraft-player-info', {
-        category: 'minecraft',
-        color: '#a6bbcf',
-        defaults: {
-            name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
-            infoType: { value: "health" },
-            player: { value: "@p" }
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "info.png",
-        label: function() {
-            return this.name || "player info";
-        },
-        paletteLabel: "player info"
-    });
-
-    RED.nodes.registerType('minecraft-block', {
-        category: 'minecraft',
-        color: '#a6bbcf',
-        defaults: {
-            name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
-            action: { value: "set" }
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "cube.png",
-        label: function() {
-            return this.name || "block";
-        },
-        paletteLabel: "block"
-    });
-
-    RED.nodes.registerType('minecraft-entity', {
-        category: 'minecraft',
-        color: '#a6bbcf',
-        defaults: {
-            name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
-            action: { value: "spawn" }
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "bug.png",
-        label: function() {
-            return this.name || "entity";
-        },
-        paletteLabel: "entity"
-    });
-</script>
-
-<!-- New Player Management template -->
-<script type="text/html" data-template-name="minecraft-player">
+<script type="text/html" data-template-name="minecraft-player-manage">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -192,22 +91,8 @@
             <option value="xp">Give XP</option>
         </select>
     </div>
-    <div class="form-row">
-        <label for="node-input-player"><i class="fa fa-user"></i> Default Player</label>
-        <input type="text" id="node-input-player" placeholder="@p">
-    </div>
-    <div class="form-row">
-        <label for="node-input-gamemode"><i class="fa fa-gamepad"></i> Default Gamemode</label>
-        <select id="node-input-gamemode">
-            <option value="survival">Survival</option>
-            <option value="creative">Creative</option>
-            <option value="adventure">Adventure</option>
-            <option value="spectator">Spectator</option>
-        </select>
-    </div>
 </script>
 
-<!-- New World Management template -->
 <script type="text/html" data-template-name="minecraft-world">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -218,7 +103,7 @@
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
-        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <label for="node-input-action"><i class="fa fa-globe"></i> Action</label>
         <select id="node-input-action">
             <option value="time">Set Time</option>
             <option value="weather">Set Weather</option>
@@ -230,8 +115,7 @@
     </div>
 </script>
 
-<!-- New Server Management template -->
-<script type="text/html" data-template-name="minecraft-server">
+<script type="text/html" data-template-name="minecraft-block">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -241,7 +125,48 @@
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
-        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <label for="node-input-action"><i class="fa fa-cube"></i> Action</label>
+        <select id="node-input-action">
+            <option value="set">Set Block</option>
+            <option value="fill">Fill Area</option>
+            <option value="clone">Clone Area</option>
+            <option value="info">Get Block Info</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/html" data-template-name="minecraft-entity">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-bug"></i> Action</label>
+        <select id="node-input-action">
+            <option value="spawn">Spawn Entity</option>
+            <option value="kill">Kill Entity</option>
+            <option value="count">Count Entities</option>
+            <option value="info">Get Entity Info</option>
+            <option value="modify">Modify Entity</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/html" data-template-name="minecraft-server-manage">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-cogs"></i> Action</label>
         <select id="node-input-action">
             <option value="save-all">Save World</option>
             <option value="save-off">Disable Saving</option>
@@ -255,8 +180,197 @@
     </div>
 </script>
 
+<!-- Help Documentation -->
+
+<script type="text/html" data-help-name="minecraft-rcon">
+    <p>Sends raw RCON commands to a Minecraft server.</p>
+    
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>The Minecraft command to execute (e.g., "time set day")</dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>The response from the server</dd>
+    </dl>
+</script>
+
+<script type="text/html" data-help-name="minecraft-server-info">
+    <p>Gets the current status of the Minecraft server.</p>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>
+            <ul>
+                <li><b>online</b>: Number of players online</li>
+                <li><b>max</b>: Maximum player capacity</li>
+                <li><b>version</b>: Server version</li>
+                <li><b>players</b>: Array of online players</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+
+<script type="text/html" data-help-name="minecraft-player-info">
+    <p>Retrieves information about a player.</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Player name or selector (e.g., "Steve" or "@p")</dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>
+            <ul>
+                <li><b>raw</b>: Raw server response</li>
+                <li><b>value</b>: Parsed value</li>
+                <li><b>player</b>: Player queried</li>
+                <li><b>type</b>: Info type queried</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+
+<script type="text/html" data-help-name="minecraft-player-manage">
+    <p>Manages player actions and properties.</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Value depends on action:
+            <ul>
+                <li><b>kick/ban/pardon</b>: Player name</li>
+                <li><b>gamemode</b>: Gamemode name (survival/creative/etc.)</li>
+                <li><b>tp</b>: Coordinates (e.g., "0 64 0")</li>
+                <li><b>give</b>: "item amount" (e.g., "diamond 64")</li>
+                <li><b>xp</b>: XP amount (e.g., "10L" or "100")</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Server response message</dd>
+    </dl>
+</script>
+
+<script type="text/html" data-help-name="minecraft-world">
+    <p>Controls world settings and environment.</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Value depends on action:
+            <ul>
+                <li><b>time</b>: "day", "night", or number</li>
+                <li><b>weather</b>: "clear", "rain", or "thunder"</li>
+                <li><b>difficulty</b>: "peaceful", "easy", "normal", "hard"</li>
+                <li><b>gamerule</b>: "rule value" (e.g., "doDaylightCycle true")</li>
+                <li><b>worldborder</b>: Border size (number)</li>
+                <li><b>setworldspawn</b>: Coordinates (e.g., "0 64 0")</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Server response message</dd>
+    </dl>
+</script>
+
+<script type="text/html" data-help-name="minecraft-block">
+    <p>Manages blocks in the world.</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Value format depends on action (use | as separator):
+            <ul>
+                <li><b>set</b>: "coordinates|block" (e.g., "0 64 0|stone")</li>
+                <li><b>fill</b>: "start_coords|end_coords|block"</li>
+                <li><b>clone</b>: "source_coords|destination_coords"</li>
+                <li><b>info</b>: "coordinates"</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>
+            <ul>
+                <li><b>raw</b>: Raw server response</li>
+                <li><b>action</b>: Action performed</li>
+                <li><b>result</b>: Parsed response data</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+
+<script type="text/html" data-help-name="minecraft-entity">
+    <p>Manages entities in the world.</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Value format depends on action (use | as separator):
+            <ul>
+                <li><b>spawn</b>: "entity|coordinates|nbt" (e.g., "zombie|~ ~2 ~|{powered:1}")</li>
+                <li><b>kill</b>: Entity selector (e.g., "@e[type=zombie]")</li>
+                <li><b>count</b>: Entity selector</li>
+                <li><b>info</b>: Entity selector</li>
+                <li><b>modify</b>: "selector|nbt_data"</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>
+            <ul>
+                <li><b>raw</b>: Raw server response</li>
+                <li><b>action</b>: Action performed</li>
+                <li><b>result</b>: Parsed response data</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+
+<script type="text/html" data-help-name="minecraft-server-manage">
+    <p>Manages server operations.</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Value depends on action:
+            <ul>
+                <li><b>whitelist</b>: "add playername" or "remove playername"</li>
+                <li><b>op/deop</b>: Player name</li>
+                <li><b>broadcast</b>: Message to broadcast</li>
+                <li>Other actions don't require payload</li>
+            </ul>
+        </dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Server response message</dd>
+    </dl>
+</script>
+
 <script type="text/javascript">
-   RED.nodes.registerType('minecraft-server-config', {
+    RED.nodes.registerType('minecraft-server-config', {
         category: 'config',
         defaults: {
             host: { value: "localhost", required: true },
@@ -284,7 +398,7 @@
         }
     });
 
-    RED.nodes.registerType('minecraft-status', {
+    RED.nodes.registerType('minecraft-server-info', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
@@ -293,52 +407,13 @@
         },
         inputs: 1,
         outputs: 1,
-        icon: "file.png",
+        icon: "status.png",
         label: function() {
-            return this.name || "minecraft status";
+            return this.name || "server info";
         }
     });
 
-    // New Player Management registration
-    RED.nodes.registerType('minecraft-player', {
-        category: 'minecraft',
-        color: '#a6bbcf',
-        defaults: {
-            name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
-            action: { value: "kick" },
-            player: { value: "@p" },
-            gamemode: { value: "survival" }
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "user.png",
-        label: function() {
-            return this.name || "minecraft player";
-        },
-        paletteLabel: "player"
-    });
-
-    // New World Management registration
-    RED.nodes.registerType('minecraft-world', {
-        category: 'minecraft',
-        color: '#a6bbcf',
-        defaults: {
-            name: { value: "" },
-            server: { type: "minecraft-server-config", required: true },
-            action: { value: "time" }
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "world.png",
-        label: function() {
-            return this.name || "minecraft world";
-        },
-        paletteLabel: "world"
-    });
-
-    // New Server Management registration
-    RED.nodes.registerType('minecraft-server', {
+    RED.nodes.registerType('minecraft-server-manage', {
         category: 'minecraft',
         color: '#a6bbcf',
         defaults: {
@@ -350,225 +425,88 @@
         outputs: 1,
         icon: "server.png",
         label: function() {
-            return this.name || "minecraft server";
-        },
-        paletteLabel: "server"
+            return this.name || "server manage";
+        }
     });
-</script>
 
-<!-- RCON Command Node Help -->
-<script type="text/html" data-help-name="minecraft-rcon">
-    <p>Sends RCON commands to a Minecraft server.</p>
-    
-    <h3>Inputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">string</span></dt>
-        <dd>The Minecraft command to execute (e.g., "time set day")</dd>
-    </dl>
+    RED.nodes.registerType('minecraft-player-info', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            infoType: { value: "health" },
+            player: { value: "@p" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "user.png",
+        label: function() {
+            return this.name || "player info";
+        }
+    });
 
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">string</span></dt>
-        <dd>The response from the server</dd>
-    </dl>
+    RED.nodes.registerType('minecraft-player-manage', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            action: { value: "kick" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "user-cog.png",
+        label: function() {
+            return this.name || "player manage";
+        }
+    });
 
-    <h3>Details</h3>
-    <p>This node allows you to send any valid Minecraft command to the server. Examples:</p>
-    <ul>
-        <li><code>time set day</code> - Sets time to day</li>
-        <li><code>weather clear</code> - Sets weather to clear</li>
-        <li><code>list</code> - Lists online players</li>
-    </ul>
-</script>
+    RED.nodes.registerType('minecraft-world', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            action: { value: "time" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "globe.png",
+        label: function() {
+            return this.name || "world";
+        }
+    });
 
-<!-- Status Node Help -->
-<script type="text/html" data-help-name="minecraft-status">
-    <p>Gets the current status of the Minecraft server.</p>
+    RED.nodes.registerType('minecraft-block', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            action: { value: "set" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "cube.png",
+        label: function() {
+            return this.name || "block";
+        }
+    });
 
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">object</span></dt>
-        <dd>
-            <ul>
-                <li><b>online</b>: Number of players online</li>
-                <li><b>max</b>: Maximum player capacity</li>
-                <li><b>version</b>: Server version</li>
-                <li><b>players</b>: Array of online players</li>
-            </ul>
-        </dd>
-    </dl>
-
-    <h3>Example Flow</h3>
-    <pre>
-[{"id":"status1","type":"minecraft-status"},{"id":"debug1","type":"debug"}]
-    </pre>
-</script>
-
-<!-- Player Info Node Help -->
-<script type="text/html" data-help-name="minecraft-player-info">
-    <p>Retrieves specific information about a player.</p>
-
-    <h3>Properties</h3>
-    <dl class="message-properties">
-        <dt>Info Type <span class="property-type">select</span></dt>
-        <dd>Type of information to retrieve:
-            <ul>
-                <li><b>health</b>: Player's health points</li>
-                <li><b>position</b>: Player's coordinates</li>
-                <li><b>inventory</b>: Inventory contents</li>
-                <li><b>experience</b>: XP level</li>
-                <li><b>gamemode</b>: Current game mode</li>
-                <li><b>food</b>: Food level</li>
-                <li><b>effects</b>: Active potion effects</li>
-            </ul>
-        </dd>
-    </dl>
-
-    <h3>Inputs</h3>
-    <dl class="message-properties">
-        <dt>player <span class="property-type">string</span></dt>
-        <dd>Player name or selector (e.g., "Steve" or "@p")</dd>
-        <dt>infoType <span class="property-type">string</span></dt>
-        <dd>Override the configured info type</dd>
-    </dl>
-
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">object</span></dt>
-        <dd>
-            <ul>
-                <li><b>raw</b>: Raw server response</li>
-                <li><b>value</b>: Parsed value</li>
-                <li><b>player</b>: Player queried</li>
-                <li><b>type</b>: Info type queried</li>
-            </ul>
-        </dd>
-    </dl>
-</script>
-
-<!-- Block Node Help -->
-<script type="text/html" data-help-name="minecraft-block">
-    <p>Manages blocks in the Minecraft world.</p>
-
-    <h3>Properties</h3>
-    <dl class="message-properties">
-        <dt>Action <span class="property-type">select</span></dt>
-        <dd>
-            <ul>
-                <li><b>set</b>: Place a single block</li>
-                <li><b>fill</b>: Fill an area with blocks</li>
-                <li><b>clone</b>: Copy blocks from one area to another</li>
-                <li><b>info</b>: Get block information</li>
-            </ul>
-        </dd>
-    </dl>
-
-    <h3>Inputs</h3>
-    <dl class="message-properties">
-        <dt>action <span class="property-type">string</span></dt>
-        <dd>Override the configured action</dd>
-        <dt>coordinates <span class="property-type">string</span></dt>
-        <dd>Block coordinates (e.g., "0 64 0")</dd>
-        <dt>block <span class="property-type">string</span></dt>
-        <dd>Block type (e.g., "stone")</dd>
-        <dt>endCoordinates <span class="property-type">string</span></dt>
-        <dd>End coordinates for fill/clone</dd>
-    </dl>
-
-    <h3>Examples</h3>
-    <pre>
-// Set a block
-msg.action = "set";
-msg.coordinates = "0 64 0";
-msg.block = "stone";
-
-// Fill area
-msg.action = "fill";
-msg.coordinates = "0 64 0";
-msg.endCoordinates = "10 64 10";
-msg.block = "grass_block";
-    </pre>
-</script>
-
-<!-- Entity Node Help -->
-<script type="text/html" data-help-name="minecraft-entity">
-    <p>Manages entities in the Minecraft world.</p>
-
-    <h3>Properties</h3>
-    <dl class="message-properties">
-        <dt>Action <span class="property-type">select</span></dt>
-        <dd>
-            <ul>
-                <li><b>spawn</b>: Create new entity</li>
-                <li><b>kill</b>: Remove entities</li>
-                <li><b>count</b>: Count entities</li>
-                <li><b>info</b>: Get entity data</li>
-                <li><b>modify</b>: Modify entity properties</li>
-            </ul>
-        </dd>
-    </dl>
-
-    <h3>Inputs</h3>
-    <dl class="message-properties">
-        <dt>action <span class="property-type">string</span></dt>
-        <dd>Override the configured action</dd>
-        <dt>entity <span class="property-type">string</span></dt>
-        <dd>Entity type (e.g., "zombie")</dd>
-        <dt>coordinates <span class="property-type">string</span></dt>
-        <dd>Spawn coordinates</dd>
-        <dt>nbt <span class="property-type">string</span></dt>
-        <dd>Entity NBT data</dd>
-    </dl>
-
-    <h3>Examples</h3>
-    <pre>
-// Spawn a charged creeper
-msg.action = "spawn";
-msg.entity = "creeper";
-msg.coordinates = "~ ~2 ~";
-msg.nbt = "{powered:1}";
-
-// Kill all zombies
-msg.action = "kill";
-msg.selector = "@e[type=zombie]";
-    </pre>
-</script>
-
-<!-- World Management Node Help -->
-<script type="text/html" data-help-name="minecraft-world">
-    <p>Controls world settings and environment.</p>
-
-    <h3>Properties</h3>
-    <dl class="message-properties">
-        <dt>Action <span class="property-type">select</span></dt>
-        <dd>
-            <ul>
-                <li><b>time</b>: Set world time</li>
-                <li><b>weather</b>: Change weather</li>
-                <li><b>difficulty</b>: Set game difficulty</li>
-                <li><b>gamerule</b>: Modify game rules</li>
-            </ul>
-        </dd>
-    </dl>
-
-    <h3>Inputs</h3>
-    <dl class="message-properties">
-        <dt>action <span class="property-type">string</span></dt>
-        <dd>Override the configured action</dd>
-        <dt>time <span class="property-type">string</span></dt>
-        <dd>Time setting (day, night, etc.)</dd>
-        <dt>weather <span class="property-type">string</span></dt>
-        <dd>Weather type (clear, rain, thunder)</dd>
-    </dl>
-
-    <h3>Examples</h3>
-    <pre>
-// Set time to day
-msg.action = "time";
-msg.time = "day";
-
-// Make it rain
-msg.action = "weather";
-msg.weather = "rain";
-    </pre>
+    RED.nodes.registerType('minecraft-entity', {
+        category: 'minecraft',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            server: { type: "minecraft-server-config", required: true },
+            action: { value: "spawn" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "bug.png",
+        label: function() {
+            return this.name || "entity";
+        }
+    });
 </script>
