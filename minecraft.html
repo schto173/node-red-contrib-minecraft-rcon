@@ -191,46 +191,115 @@
 
 <!-- Help Documentation -->
 
+<script type="text/html" data-help-name="serverconfig">
+    <p>Configuration node for Minecraft server connection settings. Required by all other Minecraft nodes.</p>
+
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Host <span class="property-type">string</span></dt>
+        <dd>IP address or hostname of your Minecraft server (e.g., "localhost" or "mc.example.com")</dd>
+        
+        <dt>RCON Port <span class="property-type">number</span></dt>
+        <dd>Port number for RCON connection (default: 25575)</dd>
+        
+        <dt>RCON Password <span class="property-type">string</span></dt>
+        <dd>Password matching your server.properties rcon.password setting</dd>
+    </dl>
+
+    <h3>Configuration</h3>
+    <p>In your server.properties file, ensure:</p>
+    <pre>enable-rcon=true
+rcon.port=25575
+rcon.password=yourpassword</pre>
+</script>
+
 <script type="text/html" data-help-name="rcon">
-    <p>Sends raw RCON commands to a Minecraft server.</p>
+    <p>Executes raw RCON commands on your Minecraft server. Use this for direct command execution.</p>
     
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string</span></dt>
-        <dd>The Minecraft command to execute (e.g., "time set day")</dd>
+        <dd>
+            The Minecraft command to execute.
+            <br/><br/>
+            Common commands:
+            <ul>
+                <li><code>list</code> - Shows online players</li>
+                <li><code>seed</code> - Shows world seed</li>
+                <li><code>help</code> - Lists available commands</li>
+                <li><code>time query daytime</code> - Gets current time</li>
+            </ul>
+        </dd>
     </dl>
 
     <h3>Outputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string</span></dt>
-        <dd>The response from the server</dd>
+        <dd>Server's response to the command</dd>
     </dl>
+
+    <h3>Examples</h3>
+    <pre>msg.payload = "give @p diamond 64";
+msg.payload = "weather clear";
+msg.payload = "time set day";</pre>
 </script>
 
 <script type="text/html" data-help-name="serverinfo">
-    <p>Gets the current status of the Minecraft server.</p>
+    <p>Retrieves current server status including player count, version, and online players.</p>
 
     <h3>Outputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">object</span></dt>
         <dd>
+            Server status object containing:
             <ul>
                 <li><b>online</b>: Number of players online</li>
                 <li><b>max</b>: Maximum player capacity</li>
-                <li><b>version</b>: Server version</li>
-                <li><b>players</b>: Array of online players</li>
+                <li><b>version</b>: Server version (e.g., "1.19.2")</li>
+                <li><b>players</b>: Array of online players, each with:
+                    <ul>
+                        <li>name: Player username</li>
+                        <li>id: Player UUID</li>
+                    </ul>
+                </li>
             </ul>
         </dd>
     </dl>
+
+    <h3>Example Output</h3>
+    <pre>{
+    "online": 3,
+    "max": 20,
+    "version": "1.19.2",
+    "players": [
+        {"name": "Steve", "id": "..."},
+        {"name": "Alex", "id": "..."}
+    ]
+}</pre>
 </script>
 
 <script type="text/html" data-help-name="playerinfo">
-    <p>Retrieves information about a player.</p>
+    <p>Retrieves detailed information about specific players.</p>
 
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string</span></dt>
         <dd>Player name or selector (e.g., "Steve" or "@p")</dd>
+        
+        <dt class="optional">infoType <span class="property-type">string</span></dt>
+        <dd>
+            Type of information to retrieve:
+            <ul>
+                <li><b>health</b>: Current health points (0-20)</li>
+                <li><b>position</b>: XYZ coordinates</li>
+                <li><b>inventory</b>: Complete inventory contents</li>
+                <li><b>experience</b>: XP level and progress</li>
+                <li><b>gamemode</b>: Current game mode</li>
+                <li><b>food</b>: Food level (0-20)</li>
+                <li><b>effects</b>: Active potion effects</li>
+                <li><b>score</b>: Scoreboard scores</li>
+            </ul>
+        </dd>
     </dl>
 
     <h3>Outputs</h3>
@@ -239,143 +308,313 @@
         <dd>
             <ul>
                 <li><b>raw</b>: Raw server response</li>
-                <li><b>value</b>: Parsed value</li>
-                <li><b>player</b>: Player queried</li>
+                <li><b>value</b>: Parsed value (type depends on query)</li>
+                <li><b>player</b>: Player name/selector used</li>
                 <li><b>type</b>: Info type queried</li>
             </ul>
         </dd>
     </dl>
+
+    <h3>Example Outputs</h3>
+    <pre>// Health query
+{
+    "raw": "Steve has 20 health",
+    "value": 20,
+    "player": "Steve",
+    "type": "health"
+}
+
+// Position query
+{
+    "raw": "Position: [100.5, 64.0, -200.5]",
+    "value": [100.5, 64.0, -200.5],
+    "player": "@p",
+    "type": "position"
+}</pre>
 </script>
 
 <script type="text/html" data-help-name="playermanage">
-    <p>Manages player actions and properties.</p>
+    <p>Manages player actions and properties. Handles commands for player interaction.</p>
 
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string</span></dt>
-        <dd>Value depends on action:
+        <dd>
+            Value format depends on action:
             <ul>
-                <li><b>kick/ban/pardon</b>: Player name</li>
-                <li><b>gamemode</b>: Gamemode name (survival/creative/etc.)</li>
-                <li><b>tp</b>: Coordinates (e.g., "0 64 0")</li>
-                <li><b>give</b>: "item amount" (e.g., "diamond 64")</li>
-                <li><b>xp</b>: XP amount (e.g., "10L" or "100")</li>
+                <li><b>kick</b>: Player name (optional reason after |)
+                    <br><code>Steve|Breaking rules</code>
+                </li>
+                <li><b>ban</b>: Player name (optional reason after |)
+                    <br><code>Steve|Griefing</code>
+                </li>
+                <li><b>pardon</b>: Player name
+                    <br><code>Steve</code>
+                </li>
+                <li><b>gamemode</b>: Player name and mode
+                    <br><code>Steve|creative</code>
+                </li>
+                <li><b>tp</b>: Player name and coordinates/target
+                    <br><code>Steve|100 64 -200</code> or <code>Steve|Alex</code>
+                </li>
+                <li><b>give</b>: Player name and item details
+                    <br><code>Steve|diamond 64</code>
+                    <br><code>Steve|diamond_sword{Enchantments:[{id:"sharpness",lvl:5}]} 1</code>
+                </li>
+                <li><b>clear</b>: Player name (optional item after |)
+                    <br><code>Steve|diamond</code>
+                </li>
+                <li><b>kill</b>: Player name
+                    <br><code>Steve</code>
+                </li>
+                <li><b>xp</b>: Player name and amount
+                    <br><code>Steve|100L</code> (levels) or <code>Steve|1000</code> (points)
+                </li>
             </ul>
         </dd>
+        
+        <dt class="optional">target <span class="property-type">string</span></dt>
+        <dd>Alternative player target (overrides payload player)</dd>
+        
+        <dt class="optional">reason <span class="property-type">string</span></dt>
+        <dd>Reason for kick/ban (overrides payload reason)</dd>
     </dl>
 
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">string</span></dt>
-        <dd>Server response message</dd>
-    </dl>
+    <h3>Common Items for Give Command</h3>
+    <ul>
+        <li><b>Basic Items</b>: diamond, iron_ingot, gold_ingot, emerald</li>
+        <li><b>Tools</b>: diamond_sword, diamond_pickaxe, diamond_axe</li>
+        <li><b>Armor</b>: diamond_helmet, diamond_chestplate, diamond_leggings, diamond_boots</li>
+        <li><b>Special</b>: enchanted_golden_apple, totem_of_undying, elytra</li>
+    </ul>
+
+    <h3>Examples</h3>
+    <pre>// Give enchanted sword
+msg.payload = "Steve|diamond_sword{Enchantments:[{id:\"sharpness\",lvl:5}]} 1";
+
+// Give named item
+msg.payload = "Steve|diamond_sword{display:{Name:'{\"text\":\"Excalibur\"}'}} 1";
+
+// Give colored armor
+msg.payload = "Steve|leather_chestplate{display:{color:16711680}} 1";
+
+// Teleport to coordinates
+msg.payload = "Steve|100 64 -200";</pre>
 </script>
-
 <script type="text/html" data-help-name="world">
-    <p>Controls world settings and environment.</p>
+    <p>Controls world settings and environment. Manages time, weather, and world properties.</p>
 
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string</span></dt>
-        <dd>Value depends on action:
+        <dd>
+            Value depends on action:
             <ul>
-                <li><b>time</b>: "day", "night", or number</li>
-                <li><b>weather</b>: "clear", "rain", or "thunder"</li>
-                <li><b>difficulty</b>: "peaceful", "easy", "normal", "hard"</li>
-                <li><b>gamerule</b>: "rule value" (e.g., "doDaylightCycle true")</li>
-                <li><b>worldborder</b>: Border size (number)</li>
-                <li><b>setworldspawn</b>: Coordinates (e.g., "0 64 0")</li>
+                <li><b>time</b>: Time setting
+                    <br><code>day</code>, <code>night</code>, <code>noon</code>, or number (0-24000)
+                </li>
+                <li><b>weather</b>: Weather type
+                    <br><code>clear</code>, <code>rain</code>, <code>thunder</code>
+                </li>
+                <li><b>difficulty</b>: Game difficulty
+                    <br><code>peaceful</code>, <code>easy</code>, <code>normal</code>, <code>hard</code>
+                </li>
+                <li><b>gamerule</b>: Rule and value
+                    <br><code>doDaylightCycle true</code>
+                    <br><code>keepInventory true</code>
+                </li>
+                <li><b>worldborder</b>: Border size
+                    <br><code>1000</code> (diameter in blocks)
+                </li>
+                <li><b>setworldspawn</b>: Coordinates
+                    <br><code>100 64 -200</code>
+                </li>
             </ul>
         </dd>
     </dl>
 
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">string</span></dt>
-        <dd>Server response message</dd>
-    </dl>
+    <h3>Common Gamerules</h3>
+    <ul>
+        <li><code>doDaylightCycle</code>: Sun/moon movement</li>
+        <li><code>keepInventory</code>: Keep items on death</li>
+        <li><code>mobGriefing</code>: Mob block destruction</li>
+        <li><code>doMobSpawning</code>: Natural mob spawns</li>
+        <li><code>doWeatherCycle</code>: Weather changes</li>
+    </ul>
+
+    <h3>Examples</h3>
+    <pre>// Set to permanent day
+msg.action = "gamerule";
+msg.payload = "doDaylightCycle false";
+// Then
+msg.action = "time";
+msg.payload = "day";
+
+// Set up safe spawn area
+msg.action = "worldborder";
+msg.payload = "1000";
+// Then
+msg.action = "difficulty";
+msg.payload = "peaceful";</pre>
 </script>
 
 <script type="text/html" data-help-name="block">
-    <p>Manages blocks in the world.</p>
+    <p>Manages blocks in the world. Place, fill, clone, or get block information.</p>
 
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string</span></dt>
-        <dd>Value format depends on action (use | as separator):
+        <dd>
+            Value format uses | as separator:
             <ul>
-                <li><b>set</b>: "coordinates|block" (e.g., "0 64 0|stone")</li>
-                <li><b>fill</b>: "start_coords|end_coords|block"</li>
-                <li><b>clone</b>: "source_coords|destination_coords"</li>
-                <li><b>info</b>: "coordinates"</li>
+                <li><b>set</b>: <code>coordinates|block[|data]</code>
+                    <br><code>0 64 0|stone</code>
+                    <br><code>0 64 0|chest{Items:[{id:"diamond",Count:64b,Slot:0b}]}</code>
+                </li>
+                <li><b>fill</b>: <code>start_coords|end_coords|block[|mode]</code>
+                    <br><code>0 64 0|10 64 10|stone</code>
+                    <br><code>0 64 0|10 64 10|air|replace diamond_ore</code>
+                </li>
+                <li><b>clone</b>: <code>source_start|source_end|destination</code>
+                    <br><code>0 64 0|10 74 10|20 64 20</code>
+                </li>
+                <li><b>info</b>: <code>coordinates</code>
+                    <br><code>0 64 0</code>
+                </li>
             </ul>
         </dd>
     </dl>
 
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">object</span></dt>
-        <dd>
-            <ul>
-                <li><b>raw</b>: Raw server response</li>
-                <li><b>action</b>: Action performed</li>
-                <li><b>result</b>: Parsed response data</li>
-            </ul>
-        </dd>
-    </dl>
+    <h3>Fill Modes</h3>
+    <ul>
+        <li><code>replace</code>: Replace all blocks</li>
+        <li><code>hollow</code>: Create hollow shape</li>
+        <li><code>outline</code>: Create outline only</li>
+        <li><code>destroy</code>: Drop block contents</li>
+    </ul>
+
+    <h3>Examples</h3>
+    <pre>// Create a platform
+msg.action = "fill";
+msg.payload = "0 64 0|10 64 10|stone";
+
+// Create hollow cube
+msg.action = "fill";
+msg.payload = "0 64 0|10 74 10|stone|hollow";
+
+// Place chest with items
+msg.action = "set";
+msg.payload = "0 64 0|chest{Items:[{id:\"diamond\",Count:64b,Slot:0b}]}";</pre>
 </script>
 
 <script type="text/html" data-help-name="entity">
-    <p>Manages entities in the world.</p>
+    <p>Manages entities in the world. Spawn, modify, or remove entities.</p>
 
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string</span></dt>
-        <dd>Value format depends on action (use | as separator):
+        <dd>
+            Value format uses | as separator:
             <ul>
-                <li><b>spawn</b>: "entity|coordinates|nbt" (e.g., "zombie|~ ~2 ~|{powered:1}")</li>
-                <li><b>kill</b>: Entity selector (e.g., "@e[type=zombie]")</li>
-                <li><b>count</b>: Entity selector</li>
-                <li><b>info</b>: Entity selector</li>
-                <li><b>modify</b>: "selector|nbt_data"</li>
+                <li><b>spawn</b>: <code>entity|coordinates|nbt</code>
+                    <br><code>zombie|~ ~2 ~|{CustomName:"\"Boss\"",Glowing:1b}</code>
+                </li>
+                <li><b>kill</b>: <code>selector</code>
+                    <br><code>@e[type=zombie,distance=..10]</code>
+                </li>
+                <li><b>count</b>: <code>selector</code>
+                    <br><code>@e[type=creeper]</code>
+                </li>
+                <li><b>info</b>: <code>selector</code>
+                    <br><code>@e[type=zombie,limit=1]</code>
+                </li>
+                <li><b>modify</b>: <code>selector|nbt_data</code>
+                    <br><code>@e[type=zombie,limit=1]|{NoAI:1b}</code>
+                </li>
             </ul>
         </dd>
     </dl>
 
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">object</span></dt>
-        <dd>
-            <ul>
-                <li><b>raw</b>: Raw server response</li>
-                <li><b>action</b>: Action performed</li>
-                <li><b>result</b>: Parsed response data</li>
-            </ul>
-        </dd>
-    </dl>
+    <h3>Common Entity Types</h3>
+    <ul>
+        <li><b>Hostile</b>: zombie, skeleton, creeper, spider</li>
+        <li><b>Passive</b>: cow, sheep, pig, chicken</li>
+        <li><b>Special</b>: armor_stand, item, experience_orb</li>
+        <li><b>Projectiles</b>: arrow, snowball, fireball</li>
+    </ul>
+
+    <h3>Common NBT Tags</h3>
+    <ul>
+        <li><code>CustomName</code>: Entity name</li>
+        <li><code>NoAI</code>: Disable AI</li>
+        <li><code>Invulnerable</code>: Can't be damaged</li>
+        <li><code>Silent</code>: No sounds</li>
+        <li><code>Glowing</code>: Glowing outline</li>
+    </ul>
+
+    <h3>Examples</h3>
+    <pre>// Spawn named, glowing zombie
+msg.action = "spawn";
+msg.payload = "zombie|~ ~2 ~|{CustomName:\"\"Boss\"\",Glowing:1b}";
+
+// Kill all creepers within 10 blocks
+msg.action = "kill";
+msg.payload = "@e[type=creeper,distance=..10]";
+
+// Make zombie immobile
+msg.action = "modify";
+msg.payload = "@e[type=zombie,limit=1]|{NoAI:1b,Invulnerable:1b}";</pre>
 </script>
 
 <script type="text/html" data-help-name="servermanage">
-    <p>Manages server operations.</p>
+    <p>Manages server operations and administration tasks.</p>
 
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string</span></dt>
-        <dd>Value depends on action:
+        <dd>
+            Value depends on action:
             <ul>
-                <li><b>whitelist</b>: "add playername" or "remove playername"</li>
-                <li><b>op/deop</b>: Player name</li>
-                <li><b>broadcast</b>: Message to broadcast</li>
-                <li>Other actions don't require payload</li>
+                <li><b>save-all</b>: No payload needed</li>
+                <li><b>save-off</b>: No payload needed</li>
+                <li><b>save-on</b>: No payload needed</li>
+                <li><b>stop</b>: No payload needed</li>
+                <li><b>whitelist</b>: <code>add|remove|list</code> and player name
+                    <br><code>add Steve</code>
+                </li>
+                <li><b>op</b>: Player name
+                    <br><code>Steve</code>
+                </li>
+                <li><b>deop</b>: Player name
+                    <br><code>Steve</code>
+                </li>
+                <li><b>broadcast</b>: Message text
+                    <br><code>Server restarting in 5 minutes!</code>
+                </li>
             </ul>
         </dd>
     </dl>
 
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">string</span></dt>
-        <dd>Server response message</dd>
-    </dl>
+    <h3>Examples</h3>
+    <pre>// Save world
+msg.action = "save-all";
+
+// Add to whitelist
+msg.action = "whitelist";
+msg.payload = "add Steve";
+
+// Broadcast message
+msg.action = "broadcast";
+msg.payload = "Welcome to the server!";</pre>
+
+    <h3>Common Use Cases</h3>
+    <ul>
+        <li>Scheduled world saves</li>
+        <li>Automated backup preparation</li>
+        <li>Server maintenance notifications</li>
+        <li>Whitelist management</li>
+        <li>Operator status management</li>
+    </ul>
 </script>
 
 <script type="text/javascript">

@@ -1,0 +1,23 @@
+[
+    {
+        "id": "a9245d5443a82360",
+        "type": "serverinfo",
+        "z": "f1e43122d714aa07",
+        "name": "",
+        "server": "c0cc1ecb0b3fc029",
+        "x": 330,
+        "y": 60,
+        "wires": [
+            [
+                "a8a7a4668aece600"
+            ]
+        ]
+    },
+    {
+        "id": "c0cc1ecb0b3fc029",
+        "type": "serverconfig",
+        "host": "localhost",
+        "rconPort": "25575",
+        "rconPassword": "test"
+    }
+]
