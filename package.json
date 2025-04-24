@@ -1,6 +1,6 @@
 {
     "name": "@tomsith/node-red-contrib-minecraft",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "description": "Node-RED nodes for Minecraft server RCON commands and status",
     "dependencies": {
         "minecraft-server-util": "^5.4.4",
